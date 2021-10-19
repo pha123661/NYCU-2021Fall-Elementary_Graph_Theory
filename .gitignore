@@ -1,3 +1,4 @@
 *.exe
+*.zip
 tmp.cpp
 tmp.py
