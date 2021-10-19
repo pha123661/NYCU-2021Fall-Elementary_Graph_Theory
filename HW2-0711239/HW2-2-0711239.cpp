@@ -54,12 +54,12 @@ int main()
 {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    int v, e, tmp;
-    cin >> v >> e;
+    int n, e, tmp;
+    cin >> n >> e;
 
-    graph g(v);
+    graph g(n);
     vector<int> cost;
-    for (int i = 0; i < v; i++)
+    for (int i = 0; i < n; i++)
     {
         cin >> tmp;
         cost.push_back(tmp);
@@ -73,7 +73,7 @@ int main()
         d--;
         g.add_edge(s, d, w);
     }
-    for (int i = 0; i < v; i++)
+    for (int i = 0; i < n; i++)
         cout << g.get_cost(i, cost) << ' ';
     cout << endl;
 }
