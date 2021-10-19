@@ -1,35 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<vector<long long int>> dp;
-vector<vector<long long int>> dist;
-vector<int> colors;
-set<int> ans;
-int n, color_types;
-
-long long int solve(int mask, int pos)
-{
-    // solved
-    if (dp[mask][pos] != -1)
-        return dp[mask][pos];
-
-    // mask = 1's, return home
-    if (mask == (1 << n) - 1)
-        return dist[0][pos];
-
-    long long int minD = INT_MAX;
-    for (int k = 0; k < n; k++)
-    {
-        if ((mask & (1 << k)) == 0) // not visited
-        {
-            int new_mask = mask | (1 << k);
-            long long int new_dist = dist[pos][k] + solve(new_mask, k);
-            minD = min(minD, new_dist);
-        }
-    }
-    return dp[mask][pos] = minD;
-}
-
 int main()
 {
     ios::sync_with_stdio(0);
