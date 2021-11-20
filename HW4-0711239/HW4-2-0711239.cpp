@@ -3,7 +3,7 @@ using namespace std;
 
 int s, t;
 int v1, v2, e, vnum;
-int graph[5000][5000], res[5000][5000];
+int graph[4020][4020], res[4020][4020];
 
 bool bfs(int parent[])
 {
@@ -19,14 +19,18 @@ bool bfs(int parent[])
         int u;
         u = q.front();
         q.pop();
-        for (int v = 1; v < vnum; v++)
+        for (int v = vnum - 1; v >= 0; v--)
         {
             if (!visited[v] && res[u][v] > 0)
             {
                 q.push(v);
                 parent[v] = u;
                 visited[v] = true;
+                if (v == t)
+                    break;
             }
+            if (visited[v] && (v == t))
+                break;
         }
     }
     return (visited[t] == true);
@@ -67,15 +71,15 @@ int main()
     memset(graph, 0, sizeof(graph));
     cin >> v1 >> v2 >> e;
     s = 0;
-    t = v1 + v2;
+    t = v1 + v2 + 1;
     vnum = v1 + v2 + 2;
-    for (int i = 0; i < v1; i++)
+    for (int i = 1; i <= v1; i++)
     {
         int w;
         cin >> w;
         graph[s][i] = w;
     }
-    for (int j = v1; j < v1 + v2; j++)
+    for (int j = v1 + 1; j <= v1 + v2; j++)
     {
         int w;
         cin >> w;
