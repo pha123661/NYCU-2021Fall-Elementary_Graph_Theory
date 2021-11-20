@@ -1,97 +1,93 @@
 #include <bits/stdc++.h>
-#include <cstring>
-#include <climits>
 using namespace std;
 
-int s, t, v;
-int graph[5000][5000], residual[5000][5000];
+int s, t;
+int v1, v2, e, vnum;
+int graph[5000][5000], res[5000][5000];
 
-bool bfs(int src, int *parent)
+bool bfs(int parent[])
 {
-    bool *visited = new bool[v];
-    memset(parent, false, sizeof(bool) * v);
-    parent[src] = -1;
+    memset(parent, -1, sizeof(int) * vnum);
+    vector<bool> visited(vnum, false);
     queue<int> q;
-    q.push(src);
-    visited[src] = true;
+    q.push(s);
+    visited[s] = true;
+    parent[s] = -1;
+
     while (!q.empty())
     {
-        int u = q.front();
+        int u;
+        u = q.front();
         q.pop();
-        for (int n = 0; n < v; n++)
+        for (int v = 1; v < vnum; v++)
         {
-            if (residual[u][n] > 0 && !visited[n])
+            if (!visited[v] && res[u][v] > 0)
             {
-                q.push(n);
-                parent[n] = u;
-                visited[n] = true;
+                q.push(v);
+                parent[v] = u;
+                visited[v] = true;
             }
         }
     }
-    return visited[t];
+    return (visited[t] == true);
 }
 
 int ff()
 {
-    for (int i = 0; i < v; i++)
-        for (int j = 0; j < v; j++)
-            residual[i][j] = graph[i][j];
+    int u, v;
+    for (int i = 0; i < vnum; i++)
+        for (int j = 0; j < vnum; j++)
+            res[i][j] = graph[i][j];
+    int parent[vnum];
+    int max_flow = 0;
 
-    int *parent = new int[v];
-    memset(parent, 0, sizeof(int) * v);
-    int ans = 0;
-    while (bfs(s, parent))
+    while (bfs(parent))
     {
-        int flow = INT_MAX;
-        for (int u = t; u != s; u = parent[u])
+        int path_flow = 1000000;
+        for (v = t; v != s; v = parent[v])
         {
-            flow = min(flow, residual[parent[u]][u]);
+            u = parent[v];
+            path_flow = min(path_flow, res[u][v]);
         }
-        ans += flow;
-        for (int u = t; u != s; u = parent[u])
+        for (v = t; v != s; v = parent[v])
         {
-            residual[parent[u]][u] -= flow;
-            residual[u][parent[u]] += flow;
+            u = parent[v];
+            res[u][v] -= path_flow;
+            res[v][u] += path_flow;
         }
+        max_flow += path_flow;
     }
-    return ans;
+    return max_flow;
 }
 
 int main()
 {
-    cin.tie(0);
+    cin.tie();
     cin.sync_with_stdio(0);
-    int v1, v2, e;
-    int x, y;
+    memset(graph, 0, sizeof(graph));
     cin >> v1 >> v2 >> e;
-    v = v1 + v2 + 2;
-    s = v1 + v2;
-    t = s + 1;
-    for (int i = 0; i < v; i++)
-        for (int j = 0; j < v; j++)
-            graph[i][j] = 0;
+    s = 0;
+    t = v1 + v2;
+    vnum = v1 + v2 + 2;
     for (int i = 0; i < v1; i++)
     {
-        int tmp;
-        cin >> tmp;
-        graph[s][i] = tmp;
+        int w;
+        cin >> w;
+        graph[s][i] = w;
     }
-    for (int i = 0; i < v2; i++)
+    for (int j = v1; j < v1 + v2; j++)
     {
-        int tmp;
-        cin >> tmp;
-        graph[i + v1][t] = tmp;
+        int w;
+        cin >> w;
+        graph[j][t] = w;
     }
     for (int i = 0; i < e; i++)
     {
-        cin >> x >> y;
-        x--;
-        y--;
-        y += v1;
-        graph[x][y] = 1;
-        // graph[s][x] = 1;
-        // graph[y][t] = 1;
+        int u, v;
+        cin >> u >> v;
+        v += v1;
+        graph[u][v] = 1;
     }
-
-    cout << ff() << "\n";
+    cout << ff() << endl;
+    return 0;
 }
