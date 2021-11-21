@@ -4,13 +4,14 @@ using namespace std;
 int ln, rn;
 vector<vector<int>> graph;
 vector<int> R, L;
-vector<bool> visited;
+vector<int> visit_count;
+vector<int> init_w;
 
 bool kuhn(int v)
 {
-    if (visited[v])
+    if (visit_count[v] == 0)
         return false;
-    visited[v] = true;
+    visit_count[v] -= 1;
     for (int i = 0; i < graph[v].size(); i++)
     {
         int to = graph[v][i] - ln;
@@ -32,11 +33,11 @@ int matching()
     bool found = false;
     do
     {
-        visited.assign(ln, false);
+        visit_count = init_w;
         found = false;
         for (int i = 0; i < ln; i++)
         {
-            if (L[i] == -1 && !visited[i])
+            if (L[i] == -1 && visit_count[i] > 0)
                 found = found || kuhn(i);
         }
     } while (found);
@@ -58,7 +59,10 @@ int main()
     rn = v2;
     int tmp;
     for (int i = 0; i < v1; i++)
+    {
         cin >> tmp;
+        init_w.push_back(tmp);
+    }
     for (int j = 0; j < v2; j++)
         cin >> tmp;
     graph.assign(n, vector<int>());
