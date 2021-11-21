@@ -1,97 +1,76 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int s, t;
-int v1, v2, e, vnum;
-int graph[4020][4020], res[4020][4020];
+int ln, rn;
+vector<vector<int>> graph;
+vector<int> R, L;
+vector<bool> visited;
 
-bool bfs(int parent[])
+bool kuhn(int v)
 {
-    memset(parent, -1, sizeof(int) * vnum);
-    vector<bool> visited(vnum, false);
-    queue<int> q;
-    q.push(s);
-    visited[s] = true;
-    parent[s] = -1;
-
-    while (!q.empty())
+    if (visited[v])
+        return false;
+    visited[v] = true;
+    for (int i = 0; i < graph[v].size(); i++)
     {
-        int u;
-        u = q.front();
-        q.pop();
-        for (int v = vnum - 1; v >= 0; v--)
+        int to = graph[v][i] - ln;
+        if (R[to] == -1 || kuhn(R[to]))
         {
-            if (!visited[v] && res[u][v] > 0)
-            {
-                q.push(v);
-                parent[v] = u;
-                visited[v] = true;
-                if (v == t)
-                    break;
-            }
-            if (visited[v] && (v == t))
-                break;
+            R[to] = v;
+            L[v] = to;
+            return true;
         }
     }
-    return (visited[t] == true);
+    return false;
 }
 
-int ff()
+int matching()
 {
-    int u, v;
-    for (int i = 0; i < vnum; i++)
-        for (int j = 0; j < vnum; j++)
-            res[i][j] = graph[i][j];
-    int parent[vnum];
-    int max_flow = 0;
+    R.assign(rn, -1);
+    L.assign(ln, -1);
 
-    while (bfs(parent))
+    bool found = false;
+    do
     {
-        int path_flow = 1000000;
-        for (v = t; v != s; v = parent[v])
+        visited.assign(ln, false);
+        found = false;
+        for (int i = 0; i < ln; i++)
         {
-            u = parent[v];
-            path_flow = min(path_flow, res[u][v]);
+            if (L[i] == -1 && !visited[i])
+                found = found || kuhn(i);
         }
-        for (v = t; v != s; v = parent[v])
-        {
-            u = parent[v];
-            res[u][v] -= path_flow;
-            res[v][u] += path_flow;
-        }
-        max_flow += path_flow;
-    }
-    return max_flow;
+    } while (found);
+    int ans = 0;
+    for (int i = 0; i < R.size(); i++)
+        if (R[i] != -1)
+            ans += 1;
+    return ans;
 }
 
 int main()
 {
     cin.tie();
     cin.sync_with_stdio(0);
-    memset(graph, 0, sizeof(graph));
+    int v1, v2, n, e;
     cin >> v1 >> v2 >> e;
-    s = 0;
-    t = v1 + v2 + 1;
-    vnum = v1 + v2 + 2;
-    for (int i = 1; i <= v1; i++)
-    {
-        int w;
-        cin >> w;
-        graph[s][i] = w;
-    }
-    for (int j = v1 + 1; j <= v1 + v2; j++)
-    {
-        int w;
-        cin >> w;
-        graph[j][t] = w;
-    }
+    n = v1 + v2;
+    ln = v1;
+    rn = v2;
+    int tmp;
+    for (int i = 0; i < v1; i++)
+        cin >> tmp;
+    for (int j = 0; j < v2; j++)
+        cin >> tmp;
+    graph.assign(n, vector<int>());
     for (int i = 0; i < e; i++)
     {
         int u, v;
         cin >> u >> v;
+        u--;
+        v--;
         v += v1;
-        graph[u][v] = 1;
+        graph[u].push_back(v);
     }
-    cout << ff() << endl;
-    return 0;
+    auto ans = matching();
+    cout << ans << endl;
 }
