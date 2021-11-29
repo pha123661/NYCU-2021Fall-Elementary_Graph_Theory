@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <climits>
 using namespace std;
 
 unsigned long long adj[1001][1001], dist[1001][1001];
@@ -19,13 +20,15 @@ unsigned long long minimum_cycle()
             {
                 if (i == j)
                     continue;
-                w = min(adj[j][k] + adj[k][i] + dist[i][j], w);
+                if ((adj[j][k] != 1000000) && (adj[k][i] != 1000000) && (dist[i][j] != 1000000))
+                    w = min(adj[j][k] + adj[k][i] + dist[i][j], w);
             }
         }
         // append point k
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
-                dist[i][j] = min(dist[i][k] + dist[k][j], dist[i][j]);
+                if ((dist[i][k] != 1000000) && (dist[k][j] != 1000000))
+                    dist[i][j] = min(dist[i][k] + dist[k][j], dist[i][j]);
     }
 
     if (w != 1000000)
