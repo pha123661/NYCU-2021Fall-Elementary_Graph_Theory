@@ -2,68 +2,37 @@
 #include <climits>
 using namespace std;
 
-unsigned long long adj[1001][1001], dist[1001][1001];
-int n, e, type;
-
-unsigned long long minimum_cycle()
-{
-    for (int i = 0; i < n; i++)
-        dist[i][i] = 1000000;
-    unsigned long long w = 1000000;
-
-    for (int k = 0; k < n; k++)
-    {
-        // min cycle for 0 ~ k-1
-        for (int i = 0; i < k; i++)
-        {
-            for (int j = 0; j < k; j++)
-            {
-                if (i == j)
-                    continue;
-                if ((adj[j][k] != 1000000) && (adj[k][i] != 1000000) && (dist[i][j] != 1000000))
-                    w = min(adj[j][k] + adj[k][i] + dist[i][j], w);
-            }
-        }
-        // append point k
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                if ((dist[i][k] != 1000000) && (dist[k][j] != 1000000))
-                    dist[i][j] = min(dist[i][k] + dist[k][j], dist[i][j]);
-    }
-
-    if (w != 1000000)
-        return w;
-    else
-        return -1;
-}
-
 int main()
 {
     cin.tie();
     cin.sync_with_stdio(0);
+    int n, e, type;
     cin >> n >> e >> type;
-    memset(adj, 1000000, sizeof(adj));
-    int u, v, w;
-    if (type == 0)
+    if (type == 1)
     {
+        vector<vector<int>> adj(n, vector<int>(n, 100000000));
         for (int i = 0; i < e; i++)
         {
+            int u, v, w;
             cin >> u >> v >> w;
-            u -= 1;
-            v -= 1;
-            adj[u][v] = adj[v][u] = w;
+            u = min(u, n) - 1;
+            v = min(v, n) - 1;
+            adj[u][v] = w;
         }
+        for (int k = 0; k < n; k++)
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    if (adj[i][j] > adj[i][k] + adj[k][j])
+                        adj[i][j] = adj[i][k] + adj[k][j];
+        int ans = numeric_limits<int>::max();
+        for (int i = 0; i < n; i++)
+            ans = min(ans, adj[i][i]);
+        if (ans != numeric_limits<int>::max())
+            cout << ans << endl;
+        else
+            cout << -1 << endl;
     }
     else
     {
-        for (int i = 0; i < e; i++)
-        {
-            cin >> u >> v >> w;
-            u -= 1;
-            v -= 1;
-            adj[u][v] = w;
-        }
     }
-    memcpy(dist, adj, sizeof(adj));
-    cout << minimum_cycle() << endl;
 }
