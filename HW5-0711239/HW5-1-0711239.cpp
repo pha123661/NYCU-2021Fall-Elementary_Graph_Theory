@@ -2,6 +2,9 @@
 #include <climits>
 using namespace std;
 
+// undirected ref: https://oi-wiki.org/graph/min-circle/
+// directed ref:https://www.quora.com/Can-Floyd-Warshall-algorithm-be-used-to-find-shortest-cycle-in-an-undirected-graph
+
 int inf = 100000000;
 
 int floyd(vector<vector<int>> &adj)
