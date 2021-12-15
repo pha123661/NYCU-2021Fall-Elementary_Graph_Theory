@@ -3,8 +3,10 @@
 using namespace std;
 
 int ans = 0;
+vector<int> color;
+vector<vector<int>> graph;
 
-bool check_color(vector<vector<int>> &graph, vector<int> &color, int v, int c)
+bool check_color(int v, int c)
 {
     for (auto u : graph[v])
         if (color[u] == c)
@@ -12,7 +14,7 @@ bool check_color(vector<vector<int>> &graph, vector<int> &color, int v, int c)
     return true;
 }
 
-void Colorable(vector<vector<int>> &graph, vector<int> &color, int v, int n)
+void Colorable(int v, int n)
 {
     if (v == n) // Done
     {
@@ -22,11 +24,11 @@ void Colorable(vector<vector<int>> &graph, vector<int> &color, int v, int n)
 
     for (int c = 1; c <= 3; c++)
     {
-        if (check_color(graph, color, v, c))
+        if (check_color(v, c))
         {
             color[v] = c;
 
-            Colorable(graph, color, v + 1, n);
+            Colorable(v + 1, n);
 
             color[v] = 0;
         }
@@ -42,8 +44,8 @@ int main()
         cout << int(pow(3, n)) << endl;
         return 0;
     }
-    vector<vector<int>> graph(n, vector<int>());
-
+    graph.assign(n, vector<int>());
+    color.assign(n, 0);
     for (int i = 0; i < e; i++)
     {
         int s, d;
@@ -53,8 +55,8 @@ int main()
         graph[s].push_back(d);
         graph[d].push_back(s);
     }
-    vector<int> color(n, 0);
-    Colorable(graph, color, 0, n);
+
+    Colorable(0, n);
 
     cout << ans << endl;
 }
